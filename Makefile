@@ -6,10 +6,10 @@
 #
 #
 
-CC=gcc
-CFLAGS=-O -DNORMALUNIX -DLINUX
+CC=emcc
+CFLAGS=-O -DNORMALUNIX -DLINUX $(shell sdl2-config --cflags) -s USE_SDL_MIXER=2
 LDFLAGS=
-LIBS=-lm
+LIBS=-lm $(shell sdl2-config --libs) -lSDL2_mixer
 
 O=linux
 
@@ -30,7 +30,7 @@ $(O)/sndserver: \
 	$(O)/sounds.o \
 	$(O)/wadread.o \
 	$(O)/linux.o -o $(O)/sndserver $(LIBS)
-	echo make complete.
+	@echo make complete.
 
 # Rule
 $(O)/%.o: %.c

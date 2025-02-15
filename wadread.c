@@ -130,12 +130,15 @@ static void derror(char* msg)
     exit(-1);
 }
 
-
+#ifndef __EMSCRIPTEN__
 void strupr (char *s)
 {
     while (*s)
 	*s++ = toupper(*s);
 }
+#endif
+// why lol
+
 
 int filelength (int handle)
 {

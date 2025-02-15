@@ -45,11 +45,14 @@ static const char rcsid[] = "$Id: soundsrv.c,v 1.3 1997/01/29 22:40:44 b1 Exp $"
 #include <stdio.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <malloc.h>
 #include <sys/stat.h>
 #include <sys/time.h>
+#include <SDL2/SDL.h>
+
 
 #include "sounds.h"
 #include "soundsrv.h"
@@ -590,7 +593,7 @@ main
   char**	v )
 {
 
-    printf("Linuxxdoom Soundserver (Emscripten SDL2 Port)");
+    printf("Linuxxdoom Soundserver (Emscripten SDL2 Port)\n");
     int		done = 0;
     int		rc;
     int		nrc;
@@ -612,7 +615,12 @@ main
     grabdata(c, v);
 
     // init any data
-    initdata();		
+    initdata();
+
+    if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0) {
+        fprintf(stderr, "could not initialise audio: %s\n", SDL_GetError());
+        return 1;
+    }
 
     I_InitSound(11025, 16);
 
