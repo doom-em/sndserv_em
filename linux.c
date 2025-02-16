@@ -47,13 +47,13 @@ static const char rcsid[] = "$Id: linux.c,v 1.3 1997/01/26 07:45:01 b1 Exp $";
 
 
 
-void I_InitMusic(void)
+void SNDSERV_InitMusic(void)
 {
     // stupid linuxxdoom bastards too lazy to implement the DOOM music
 }
 
 void
-I_InitSound
+SNDSERV_InitSound
 ( int	samplerate,
   int	samplesize )
 {
@@ -73,7 +73,7 @@ I_InitSound
 }
 
 void
-I_SubmitOutputBuffer
+SNDSERV_SubmitOutputBuffer
 ( void*	samples,
   int	samplecount )
 {
@@ -85,13 +85,13 @@ I_SubmitOutputBuffer
     }
 }
 
-void I_ShutdownSound(void)
+void SNDSERV_ShutdownSound(void)
 {
 
     Mix_CloseAudio();
 
 }
 
-void I_ShutdownMusic(void)
+void SNDSERV_ShutdownMusic(void)
 {
 }

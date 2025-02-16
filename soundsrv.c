@@ -136,13 +136,13 @@ int		steptable[256];
 
 int		vol_lookup[128*256];
 
-static void derror(char* msg)
+static void SNDSERV_derror(char* msg)
 {
     fprintf(stderr, "error: %s\n", msg);
     exit(-1);
 }
 
-int mix(void)
+int SNDSERV_mix(void)
 {
 
     register int		dl;
@@ -304,7 +304,7 @@ int mix(void)
 
 
 void
-grabdata
+SNDSERV_grabdata
 ( int		c,
   char**	v )
 {
@@ -342,7 +342,7 @@ grabdata
 
     //	home = getenv("HOME");
     //	if (!home)
-    //	  derror("Please set $HOME to your home directory");
+    //	  SNDSERV_derror("Please set $HOME to your home directory");
     //	sprintf(basedefault, "%s/.doomrc", home);
 
 
@@ -378,19 +378,19 @@ grabdata
     }
 
     
-    openwad(name);
+    SNDSERV_openwad(name);
     if (snd_verbose)
 	fprintf(stderr, "loading from [%s]\n", name);
 
     for (i=1 ; i<NUMSFX ; i++)
     {
-	if (!S_sfx[i].link)
+	if (!SNDSERV_S_sfx[i].link)
 	{
-	    S_sfx[i].data = getsfx(S_sfx[i].name, &lengths[i]);
+	    SNDSERV_S_sfx[i].data = SNDSERV_getsfx(SNDSERV_S_sfx[i].name, &lengths[i]);
 	    if (longsound < lengths[i]) longsound = lengths[i];
 	} else {
-	    S_sfx[i].data = S_sfx[i].link->data;
-	    lengths[i] = lengths[(S_sfx[i].link - S_sfx)/sizeof(sfxinfo_t)];
+	    SNDSERV_S_sfx[i].data = SNDSERV_S_sfx[i].link->data;
+	    lengths[i] = lengths[(SNDSERV_S_sfx[i].link - SNDSERV_S_sfx)/sizeof(sfxinfo_t)];
 	}
 	// test only
 	//  {
@@ -398,7 +398,7 @@ grabdata
 	//  char name[10];
 	//  sprintf(name, "sfx%d", i);
 	//  fd = open(name, O_WRONLY|O_CREAT, 0644);
-	//  write(fd, S_sfx[i].data, lengths[i]);
+	//  write(fd, SNDSERV_S_sfx[i].data, lengths[i]);
 	//  close(fd);
 	//  }
     }
@@ -410,16 +410,16 @@ static struct timeval		last={0,0};
 
 static struct timezone		whocares;
 
-void updatesounds(void)
+void SNDSERV_updatesounds(void)
 {
 
-    mix();
-    I_SubmitOutputBuffer(mixbuffer, SAMPLECOUNT);
+    SNDSERV_mix();
+    SNDSERV_SubmitOutputBuffer(mixbuffer, SAMPLECOUNT);
 
 }
 
 int
-addsfx
+SNDSERV_addsfx
 ( int		sfxid,
   int		volume,
   int		step,
@@ -469,7 +469,7 @@ addsfx
     else
 	slot = i;
 
-    channels[slot] = (unsigned char *) S_sfx[sfxid].data;
+    channels[slot] = (unsigned char *) SNDSERV_S_sfx[sfxid].data;
     channelsend[slot] = channels[slot] + lengths[sfxid];
 
     if (!handlenums)
@@ -495,10 +495,10 @@ addsfx
 
     // sanity check
     if (rightvol < 0 || rightvol > 127)
-	derror("rightvol out of bounds");
+	SNDSERV_derror("rightvol out of bounds");
     
     if (leftvol < 0 || leftvol > 127)
-	derror("leftvol out of bounds");
+	SNDSERV_derror("leftvol out of bounds");
     
     // get the proper lookup table piece
     //  for this volume level
@@ -512,7 +512,7 @@ addsfx
 }
 
 
-void outputushort(int num)
+void SNDSERV_outputushort(int num)
 {
 
     static unsigned char	buff[5] = { 0, 0, 0, 0, '\n' };
@@ -537,7 +537,7 @@ void outputushort(int num)
     }
 }
 
-void initdata(void)
+void SNDSERV_initdata(void)
 {
 
     int		i;
@@ -573,10 +573,13 @@ void initdata(void)
 
 
 
-void quit(void)
+void SNDSERV_quit(void)
 {
-    I_ShutdownMusic();
-    I_ShutdownSound();
+    SNDSERV_ShutdownMusic();
+    SNDSERV_ShutdownSound();
+#ifndef DOOM
+	SDL_Quit();
+#endif
     exit(0);
 }
 
@@ -588,7 +591,11 @@ fd_set		scratchset;
 
 
 int
+#ifndef DOOM
 main
+#else
+SNDSERV_main
+#endif
 ( int		c,
   char**	v )
 {
@@ -612,19 +619,19 @@ main
     int		waitingtofinish=0;
 
     // get sound data
-    grabdata(c, v);
+    SNDSERV_grabdata(c, v);
 
     // init any data
-    initdata();
+    SNDSERV_initdata();
 
     if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0) {
         fprintf(stderr, "could not initialise audio: %s\n", SDL_GetError());
         return 1;
     }
 
-    I_InitSound(11025, 16);
+    SNDSERV_InitSound(11025, 16);
 
-    I_InitMusic();
+    SNDSERV_InitMusic();
 
     if (snd_verbose)
 	fprintf(stderr, "ready\n");
@@ -695,9 +702,9 @@ main
 			    vol = (commandbuf[4]<<4) + commandbuf[5];
 			    sep = (commandbuf[6]<<4) + commandbuf[7];
 
-			    handle = addsfx(sndnum, vol, step, sep);
+			    handle = SNDSERV_addsfx(sndnum, vol, step, sep);
 			    // returns the handle
-			    //	outputushort(handle);
+			    //	SNDSERV_outputushort(handle);
 			    break;
 			    
 			  case 'q':
@@ -714,7 +721,7 @@ main
 			      commandbuf[0] -= commandbuf[0]>='a' ? 'a'-10 : '0';
 			      commandbuf[1] -= commandbuf[1]>='a' ? 'a'-10 : '0';
 			      sndnum = (commandbuf[0]<<4) + commandbuf[1];
-			      write(fd, S_sfx[sndnum].data, lengths[sndnum]);
+			      write(fd, SNDSERV_S_sfx[sndnum].data, lengths[sndnum]);
 			      close(fd);
 			  }
 			  break;
@@ -727,12 +734,12 @@ main
 		}
 		else if (rc < 0)
 		{
-		    quit();
+		    SNDSERV_quit();
 		}
 	    } while (rc > 0);
 	}
 
-	updatesounds();
+	SNDSERV_updatesounds();
 
 	if (waitingtofinish)
 	{
@@ -744,6 +751,6 @@ main
 
     }
 
-    quit();
+    SNDSERV_quit();
     return 0;
 }

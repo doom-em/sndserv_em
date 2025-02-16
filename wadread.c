@@ -101,10 +101,10 @@ void**		lumpcache;
 
 #else
 
-#define LONG(x) ((long)SwapLONG((unsigned long) (x)))
-#define SHORT(x) ((short)SwapSHORT((unsigned short) (x)))
+#define LONG(x) ((long)SNDSERV_SwapLONG((unsigned long) (x)))
+#define SHORT(x) ((short)SNDSERV_SwapSHORT((unsigned short) (x)))
 
-unsigned long SwapLONG(unsigned long x)
+unsigned long SNDSERV_SwapLONG(unsigned long x)
 {
     return
 	(x>>24)
@@ -113,7 +113,7 @@ unsigned long SwapLONG(unsigned long x)
 	| (x<<24);
 }
 
-unsigned short SwapSHORT(unsigned short x)
+unsigned short SNDSERV_SwapSHORT(unsigned short x)
 {
     return
 	(x>>8) | (x<<8);
@@ -124,7 +124,7 @@ unsigned short SwapSHORT(unsigned short x)
 
 
 // Way too many of those...
-static void derror(char* msg)
+static void SNDSERV_derror(char* msg)
 {
     fprintf(stderr, "\nwadread error: %s\n", msg);
     exit(-1);
@@ -140,7 +140,7 @@ void strupr (char *s)
 // why lol
 
 
-int filelength (int handle)
+/* int filelength (int handle)
 {
     struct stat	fileinfo;
   
@@ -148,11 +148,11 @@ int filelength (int handle)
 	fprintf (stderr, "Error fstating\n");
 
     return fileinfo.st_size;
-}
+}*/
 
 
 
-void openwad(char* wadname)
+void SNDSERV_openwad(char* wadname)
 {
 
     int		wadfile;
@@ -167,12 +167,12 @@ void openwad(char* wadname)
     wadfile = open(wadname, O_RDONLY);
 
     if (wadfile < 0)
-	derror("Could not open wadfile");
+	SNDSERV_derror("Could not open wadfile");
 
     read(wadfile, &header, sizeof header);
 
     if (strncmp(header.identification, "IWAD", 4))
-	derror("wadfile has weirdo header");
+	SNDSERV_derror("wadfile has weirdo header");
 
     numlumps = LONG(header.numlumps);
     tableoffset = LONG(header.infotableofs);
@@ -198,7 +198,7 @@ void openwad(char* wadname)
 }
 
 void*
-loadlump
+SNDSERV_loadlump
 ( char*		lumpname,
   int*		size )
 {
@@ -231,7 +231,7 @@ loadlump
 }
 
 void*
-getsfx
+SNDSERV_getsfx
 ( char*		sfxname,
   int*		len )
 {
@@ -245,7 +245,7 @@ getsfx
 
     sprintf(name, "ds%s", sfxname);
 
-    sfx = (unsigned char *) loadlump(name, &size);
+    sfx = (unsigned char *) SNDSERV_loadlump(name, &size);
 
     // pad the sound effect out to the mixing buffer size
     paddedsize = ((size-8 + (SAMPLECOUNT-1)) / SAMPLECOUNT) * SAMPLECOUNT;

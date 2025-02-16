@@ -41,10 +41,10 @@
 
 //
 //  Opens the wadfile specified.
-// Must be called before any calls to  loadlump() or getsfx().
+// Must be called before any calls to  SNDSERV_loadlump() or SNDSERV_getsfx().
 //
 
-void openwad(char* wadname);
+void SNDSERV_openwad(char* wadname);
 
 //
 //  Gets a sound effect from the wad file.  The pointer points to the
@@ -55,7 +55,7 @@ void openwad(char* wadname);
 //
 
 void*
-getsfx
+SNDSERV_getsfx
 ( char*		sfxname,
   int*		len );
 

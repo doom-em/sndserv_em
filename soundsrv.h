@@ -40,19 +40,19 @@
 #define SPEED			11025
 
 
-void I_InitMusic(void);
+void SNDSERV_InitMusic(void);
 
 void
-I_InitSound
+SNDSERV_InitSound
 ( int		samplerate,
   int		samplesound );
 
 void
-I_SubmitOutputBuffer
+SNDSERV_SubmitOutputBuffer
 ( void*		samples,
   int		samplecount );
 
-void I_ShutdownSound(void);
-void I_ShutdownMusic(void);
+void SNDSERV_ShutdownSound(void);
+void SNDSERV_ShutdownMusic(void);
 
 #endif
