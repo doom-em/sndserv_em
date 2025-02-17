@@ -39,6 +39,12 @@
 #define MIXBUFFERSIZE	(SAMPLECOUNT*2*2)
 #define SPEED			11025
 
+#ifdef DOOM
+int SNDSERV_main
+( int		c,
+  char**	v )
+#endif
+
 
 void SNDSERV_InitMusic(void);
 
