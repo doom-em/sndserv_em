@@ -42,7 +42,7 @@
 #ifdef DOOM
 int SNDSERV_main
 ( int		c,
-  char**	v )
+  char**	v );
 #endif
 
 
