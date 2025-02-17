@@ -43,6 +43,8 @@
 int SNDSERV_main
 ( int		c,
   char**	v );
+
+void* SNDSERV_mainthread(void* unused);
 #endif
 
 

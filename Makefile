@@ -7,7 +7,7 @@
 #
 
 CC=emcc
-CFLAGS=-O -DNORMALUNIX -DLINUX $(shell sdl2-config --cflags) -s USE_SDL_MIXER=2
+CFLAGS=-O -DNORMALUNIX -DLINUX $(shell sdl2-config --cflags) -s USE_SDL_MIXER=2 # -DDOOM
 LDFLAGS=
 LIBS=-lm $(shell sdl2-config --libs) -lSDL2_mixer
 

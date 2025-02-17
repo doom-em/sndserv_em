@@ -776,3 +776,12 @@ SNDSERV_main
     SNDSERV_quit();
     return 0;
 }
+
+
+#ifdef DOOM
+void* SNDSERV_mainthread(void* unused) {
+    char* args[] = { "sndserver", "-quiet", NULL };
+    SNDSERV_main(2, args);
+    return NULL;
+}
+#endif
