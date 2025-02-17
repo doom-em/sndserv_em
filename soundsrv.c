@@ -60,6 +60,10 @@ static const char rcsid[] = "$Id: soundsrv.c,v 1.3 1997/01/29 22:40:44 b1 Exp $"
 
 
 
+// set this to whatever. I honestly couldn't care less...
+#define SNDSERV_PIPE "/tmp/sndserv_em_pipe"
+
+
 //
 // Department of Redundancy Department.
 //
@@ -601,6 +605,7 @@ SNDSERV_main
 {
 
     printf("Linuxxdoom Soundserver (Emscripten SDL2 Port)\n");
+	int 	pipe_fd;
     int		done = 0;
     int		rc;
     int		nrc;
@@ -617,7 +622,17 @@ SNDSERV_main
     
     int		i;
     int		waitingtofinish=0;
+#ifdef DOOM
+	// pipe of amaze
+	mkfifo(SNDSERV_PIPE, 0666);
 
+	pipe_fd = open(SNDSERV_PIPE, O_RDONLY);
+    if (pipe_fd == -1) {
+        perror("open");
+        return 1;
+    }
+
+#endif
     // get sound data
     SNDSERV_grabdata(c, v);
 
@@ -654,7 +669,13 @@ SNDSERV_main
 		{
 		    //	fprintf(stderr, "select is true\n");
 		    // got a command
-		    nrc = read(0, commandbuf, 1);
+		    nrc = read(
+#ifdef DOOM
+				pipe_fd,
+#else
+				0,
+#endif
+				commandbuf, 1);
 
 		    if (!nrc)
 		    {
@@ -750,6 +771,7 @@ SNDSERV_main
 	}
 
     }
+	close(pipe_fd);
 
     SNDSERV_quit();
     return 0;
