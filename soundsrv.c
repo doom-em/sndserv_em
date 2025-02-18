@@ -56,8 +56,11 @@ static const char rcsid[] = "$Id: soundsrv.c,v 1.3 1997/01/29 22:40:44 b1 Exp $"
 
 #include "sounds.h"
 #include "soundsrv.h"
+#ifdef DOOM
+#include "../w_wad.h"
+#else
 #include "wadread.h"
-
+#endif
 
 
 // set this to whatever. I honestly couldn't care less...
@@ -99,7 +102,7 @@ int 		longsound;
 int 		SNDSERV_lengths[NUMSFX];
 
 // mixing buffer
-signed short	SNDSERV_mixbuffer[MIXBUFFERSIZE];
+signed short	SNDSERV_mixbuffer[SNDSERV_MIXBUFFERSIZE];
 
 // file descriptor of sfx device
 int		sfxdevice;			

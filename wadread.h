@@ -50,7 +50,7 @@ void SNDSERV_openwad(char* wadname);
 //  Gets a sound effect from the wad file.  The pointer points to the
 //  start of the data.  Returns a 0 if the sfx was not
 //  found.  Sfx names should be no longer than 6 characters.  All data is
-//  rounded up in size to the nearest MIXBUFFERSIZE and is padded out with
+//  rounded up in size to the nearest SNDSERV_MIXBUFFERSIZE and is padded out with
 //  0x80's.  Returns the data length in len.
 //
 
