@@ -95,11 +95,11 @@ int 		numsounds;
 // longest sound effect
 int 		longsound;
 
-// lengths of all sound effects
-int 		lengths[NUMSFX];
+// SNDSERV_lengths of all sound effects
+int 		SNDSERV_lengths[NUMSFX];
 
 // mixing buffer
-signed short	mixbuffer[MIXBUFFERSIZE];
+signed short	SNDSERV_mixbuffer[MIXBUFFERSIZE];
 
 // file descriptor of sfx device
 int		sfxdevice;			
@@ -107,38 +107,38 @@ int		sfxdevice;
 // file descriptor of music device
 int 		musdevice;			
 
-// the channel data pointers
-unsigned char*	channels[8];
+// the SNDSERV_channel data pointers
+unsigned char*	SNDSERV_channels[8];
 
-// the channel step amount
-unsigned int	channelstep[8];
+// the SNDSERV_channel step amount
+unsigned int	SNDSERV_channelstep[8];
 
 // 0.16 bit remainder of last step
-unsigned int	channelstepremainder[8];
+unsigned int	SNDSERV_channelstepremainder[8];
 
-// the channel data end pointers
-unsigned char*	channelsend[8];
+// the SNDSERV_channel data end pointers
+unsigned char*	SNDSERV_channelsend[8];
 
-// time that the channel started playing
-int		channelstart[8];
+// time that the SNDSERV_channel started playing
+int		SNDSERV_channelstart[8];
 
-// the channel handles
-int 		channelhandles[8];
+// the SNDSERV_channel handles
+int 		SNDSERV_channelhandles[8];
 
-// the channel left volume lookup
-int*		channelleftvol_lookup[8];
+// the SNDSERV_channel left volume lookup
+int*		SNDSERV_channelleftvol_lookup[8];
 
-// the channel right volume lookup
-int*		channelrightvol_lookup[8];
+// the SNDSERV_channel right volume lookup
+int*		SNDSERV_channelrightvol_lookup[8];
 
 // sfx id of the playing sound effect
-int		channelids[8];			
+int		SNDSERV_channelids[8];			
 
 int		snd_verbose=1;
 
-int		steptable[256];
+int		SNDSERV_steptable[256];
 
-int		vol_lookup[128*256];
+int		SNDSERV_vol_lookup[128*256];
 
 static void SNDSERV_derror(char* msg)
 {
@@ -159,11 +159,11 @@ int SNDSERV_mix(void)
     
     int				step;
 
-    leftout = mixbuffer;
-    rightout = mixbuffer+1;
+    leftout = SNDSERV_mixbuffer;
+    rightout = SNDSERV_mixbuffer+1;
     step = 2;
 
-    leftend = mixbuffer + SAMPLECOUNT*step;
+    leftend = SNDSERV_mixbuffer + SAMPLECOUNT*step;
 
     // mix into the mixing buffer
     while (leftout != leftend)
@@ -172,107 +172,107 @@ int SNDSERV_mix(void)
 	dl = 0;
 	dr = 0;
 
-	if (channels[0])
+	if (SNDSERV_channels[0])
 	{
-	    sample = *channels[0];
-	    dl += channelleftvol_lookup[0][sample];
-	    dr += channelrightvol_lookup[0][sample];
-	    channelstepremainder[0] += channelstep[0];
-	    channels[0] += channelstepremainder[0] >> 16;
-	    channelstepremainder[0] &= 65536-1;
+	    sample = *SNDSERV_channels[0];
+	    dl += SNDSERV_channelleftvol_lookup[0][sample];
+	    dr += SNDSERV_channelrightvol_lookup[0][sample];
+	    SNDSERV_channelstepremainder[0] += SNDSERV_channelstep[0];
+	    SNDSERV_channels[0] += SNDSERV_channelstepremainder[0] >> 16;
+	    SNDSERV_channelstepremainder[0] &= 65536-1;
 
-	    if (channels[0] >= channelsend[0])
-		channels[0] = 0;
+	    if (SNDSERV_channels[0] >= SNDSERV_channelsend[0])
+		SNDSERV_channels[0] = 0;
 	}
 
-	if (channels[1])
+	if (SNDSERV_channels[1])
 	{
-	    sample = *channels[1];
-	    dl += channelleftvol_lookup[1][sample];
-	    dr += channelrightvol_lookup[1][sample];
-	    channelstepremainder[1] += channelstep[1];
-	    channels[1] += channelstepremainder[1] >> 16;
-	    channelstepremainder[1] &= 65536-1;
+	    sample = *SNDSERV_channels[1];
+	    dl += SNDSERV_channelleftvol_lookup[1][sample];
+	    dr += SNDSERV_channelrightvol_lookup[1][sample];
+	    SNDSERV_channelstepremainder[1] += SNDSERV_channelstep[1];
+	    SNDSERV_channels[1] += SNDSERV_channelstepremainder[1] >> 16;
+	    SNDSERV_channelstepremainder[1] &= 65536-1;
 
-	    if (channels[1] >= channelsend[1])
-		channels[1] = 0;
+	    if (SNDSERV_channels[1] >= SNDSERV_channelsend[1])
+		SNDSERV_channels[1] = 0;
 	}
 
-	if (channels[2])
+	if (SNDSERV_channels[2])
 	{
-	    sample = *channels[2];
-	    dl += channelleftvol_lookup[2][sample];
-	    dr += channelrightvol_lookup[2][sample];
-	    channelstepremainder[2] += channelstep[2];
-	    channels[2] += channelstepremainder[2] >> 16;
-	    channelstepremainder[2] &= 65536-1;
+	    sample = *SNDSERV_channels[2];
+	    dl += SNDSERV_channelleftvol_lookup[2][sample];
+	    dr += SNDSERV_channelrightvol_lookup[2][sample];
+	    SNDSERV_channelstepremainder[2] += SNDSERV_channelstep[2];
+	    SNDSERV_channels[2] += SNDSERV_channelstepremainder[2] >> 16;
+	    SNDSERV_channelstepremainder[2] &= 65536-1;
 
-	    if (channels[2] >= channelsend[2])
-		channels[2] = 0;
-	}
-	
-	if (channels[3])
-	{
-	    sample = *channels[3];
-	    dl += channelleftvol_lookup[3][sample];
-	    dr += channelrightvol_lookup[3][sample];
-	    channelstepremainder[3] += channelstep[3];
-	    channels[3] += channelstepremainder[3] >> 16;
-	    channelstepremainder[3] &= 65536-1;
-
-	    if (channels[3] >= channelsend[3])
-		channels[3] = 0;
+	    if (SNDSERV_channels[2] >= SNDSERV_channelsend[2])
+		SNDSERV_channels[2] = 0;
 	}
 	
-	if (channels[4])
+	if (SNDSERV_channels[3])
 	{
-	    sample = *channels[4];
-	    dl += channelleftvol_lookup[4][sample];
-	    dr += channelrightvol_lookup[4][sample];
-	    channelstepremainder[4] += channelstep[4];
-	    channels[4] += channelstepremainder[4] >> 16;
-	    channelstepremainder[4] &= 65536-1;
+	    sample = *SNDSERV_channels[3];
+	    dl += SNDSERV_channelleftvol_lookup[3][sample];
+	    dr += SNDSERV_channelrightvol_lookup[3][sample];
+	    SNDSERV_channelstepremainder[3] += SNDSERV_channelstep[3];
+	    SNDSERV_channels[3] += SNDSERV_channelstepremainder[3] >> 16;
+	    SNDSERV_channelstepremainder[3] &= 65536-1;
 
-	    if (channels[4] >= channelsend[4])
-		channels[4] = 0;
+	    if (SNDSERV_channels[3] >= SNDSERV_channelsend[3])
+		SNDSERV_channels[3] = 0;
 	}
 	
-	if (channels[5])
+	if (SNDSERV_channels[4])
 	{
-	    sample = *channels[5];
-	    dl += channelleftvol_lookup[5][sample];
-	    dr += channelrightvol_lookup[5][sample];
-	    channelstepremainder[5] += channelstep[5];
-	    channels[5] += channelstepremainder[5] >> 16;
-	    channelstepremainder[5] &= 65536-1;
+	    sample = *SNDSERV_channels[4];
+	    dl += SNDSERV_channelleftvol_lookup[4][sample];
+	    dr += SNDSERV_channelrightvol_lookup[4][sample];
+	    SNDSERV_channelstepremainder[4] += SNDSERV_channelstep[4];
+	    SNDSERV_channels[4] += SNDSERV_channelstepremainder[4] >> 16;
+	    SNDSERV_channelstepremainder[4] &= 65536-1;
 
-	    if (channels[5] >= channelsend[5])
-		channels[5] = 0;
+	    if (SNDSERV_channels[4] >= SNDSERV_channelsend[4])
+		SNDSERV_channels[4] = 0;
 	}
 	
-	if (channels[6])
+	if (SNDSERV_channels[5])
 	{
-	    sample = *channels[6];
-	    dl += channelleftvol_lookup[6][sample];
-	    dr += channelrightvol_lookup[6][sample];
-	    channelstepremainder[6] += channelstep[6];
-	    channels[6] += channelstepremainder[6] >> 16;
-	    channelstepremainder[6] &= 65536-1;
+	    sample = *SNDSERV_channels[5];
+	    dl += SNDSERV_channelleftvol_lookup[5][sample];
+	    dr += SNDSERV_channelrightvol_lookup[5][sample];
+	    SNDSERV_channelstepremainder[5] += SNDSERV_channelstep[5];
+	    SNDSERV_channels[5] += SNDSERV_channelstepremainder[5] >> 16;
+	    SNDSERV_channelstepremainder[5] &= 65536-1;
 
-	    if (channels[6] >= channelsend[6])
-		channels[6] = 0;
+	    if (SNDSERV_channels[5] >= SNDSERV_channelsend[5])
+		SNDSERV_channels[5] = 0;
 	}
-	if (channels[7])
+	
+	if (SNDSERV_channels[6])
 	{
-	    sample = *channels[7];
-	    dl += channelleftvol_lookup[7][sample];
-	    dr += channelrightvol_lookup[7][sample];
-	    channelstepremainder[7] += channelstep[7];
-	    channels[7] += channelstepremainder[7] >> 16;
-	    channelstepremainder[7] &= 65536-1;
+	    sample = *SNDSERV_channels[6];
+	    dl += SNDSERV_channelleftvol_lookup[6][sample];
+	    dr += SNDSERV_channelrightvol_lookup[6][sample];
+	    SNDSERV_channelstepremainder[6] += SNDSERV_channelstep[6];
+	    SNDSERV_channels[6] += SNDSERV_channelstepremainder[6] >> 16;
+	    SNDSERV_channelstepremainder[6] &= 65536-1;
 
-	    if (channels[7] >= channelsend[7])
-		channels[7] = 0;
+	    if (SNDSERV_channels[6] >= SNDSERV_channelsend[6])
+		SNDSERV_channels[6] = 0;
+	}
+	if (SNDSERV_channels[7])
+	{
+	    sample = *SNDSERV_channels[7];
+	    dl += SNDSERV_channelleftvol_lookup[7][sample];
+	    dr += SNDSERV_channelrightvol_lookup[7][sample];
+	    SNDSERV_channelstepremainder[7] += SNDSERV_channelstep[7];
+	    SNDSERV_channels[7] += SNDSERV_channelstepremainder[7] >> 16;
+	    SNDSERV_channelstepremainder[7] &= 65536-1;
+
+	    if (SNDSERV_channels[7] >= SNDSERV_channelsend[7])
+		SNDSERV_channels[7] = 0;
 	}
 
 	// Has been char instead of short.
@@ -390,11 +390,11 @@ SNDSERV_grabdata
     {
 	if (!SNDSERV_S_sfx[i].link)
 	{
-	    SNDSERV_S_sfx[i].data = SNDSERV_getsfx(SNDSERV_S_sfx[i].name, &lengths[i]);
-	    if (longsound < lengths[i]) longsound = lengths[i];
+	    SNDSERV_S_sfx[i].data = SNDSERV_getsfx(SNDSERV_S_sfx[i].name, &SNDSERV_lengths[i]);
+	    if (longsound < SNDSERV_lengths[i]) longsound = SNDSERV_lengths[i];
 	} else {
 	    SNDSERV_S_sfx[i].data = SNDSERV_S_sfx[i].link->data;
-	    lengths[i] = lengths[(SNDSERV_S_sfx[i].link - SNDSERV_S_sfx)/sizeof(sfxinfo_t)];
+	    SNDSERV_lengths[i] = SNDSERV_lengths[(SNDSERV_S_sfx[i].link - SNDSERV_S_sfx)/sizeof(sfxinfo_t)];
 	}
 	// test only
 	//  {
@@ -402,7 +402,7 @@ SNDSERV_grabdata
 	//  char name[10];
 	//  sprintf(name, "sfx%d", i);
 	//  fd = open(name, O_WRONLY|O_CREAT, 0644);
-	//  write(fd, SNDSERV_S_sfx[i].data, lengths[i]);
+	//  write(fd, SNDSERV_S_sfx[i].data, SNDSERV_lengths[i]);
 	//  close(fd);
 	//  }
     }
@@ -418,7 +418,7 @@ void SNDSERV_updatesounds(void)
 {
 
     SNDSERV_mix();
-    SNDSERV_SubmitOutputBuffer(mixbuffer, SAMPLECOUNT);
+    SNDSERV_SubmitOutputBuffer(SNDSERV_mixbuffer, SAMPLECOUNT);
 
 }
 
@@ -451,20 +451,20 @@ SNDSERV_addsfx
     {
 	for (i=0 ; i<8 ; i++)
 	{
-	    if (channels[i] && channelids[i] == sfxid)
+	    if (SNDSERV_channels[i] && SNDSERV_channelids[i] == sfxid)
 	    {
-		channels[i] = 0;
+		SNDSERV_channels[i] = 0;
 		break;
 	    }
 	}
     }
 
-    for (i=0 ; i<8 && channels[i] ; i++)
+    for (i=0 ; i<8 && SNDSERV_channels[i] ; i++)
     {
-	if (channelstart[i] < oldest)
+	if (SNDSERV_channelstart[i] < oldest)
 	{
 	    oldestnum = i;
-	    oldest = channelstart[i];
+	    oldest = SNDSERV_channelstart[i];
 	}
     }
 
@@ -473,16 +473,16 @@ SNDSERV_addsfx
     else
 	slot = i;
 
-    channels[slot] = (unsigned char *) SNDSERV_S_sfx[sfxid].data;
-    channelsend[slot] = channels[slot] + lengths[sfxid];
+    SNDSERV_channels[slot] = (unsigned char *) SNDSERV_S_sfx[sfxid].data;
+    SNDSERV_channelsend[slot] = SNDSERV_channels[slot] + SNDSERV_lengths[sfxid];
 
     if (!handlenums)
 	handlenums = 100;
     
-    channelhandles[slot] = rc = handlenums++;
-    channelstep[slot] = step;
-    channelstepremainder[slot] = 0;
-    channelstart[slot] = mytime;
+    SNDSERV_channelhandles[slot] = rc = handlenums++;
+    SNDSERV_channelstep[slot] = step;
+    SNDSERV_channelstepremainder[slot] = 0;
+    SNDSERV_channelstart[slot] = mytime;
 
     // (range: 1 - 256)
     seperation += 1;
@@ -506,10 +506,10 @@ SNDSERV_addsfx
     
     // get the proper lookup table piece
     //  for this volume level
-    channelleftvol_lookup[slot] = &vol_lookup[leftvol*256];
-    channelrightvol_lookup[slot] = &vol_lookup[rightvol*256];
+    SNDSERV_channelleftvol_lookup[slot] = &SNDSERV_vol_lookup[leftvol*256];
+    SNDSERV_channelrightvol_lookup[slot] = &SNDSERV_vol_lookup[rightvol*256];
 
-    channelids[slot] = sfxid;
+    SNDSERV_channelids[slot] = sfxid;
 
     return rc;
 
@@ -547,30 +547,30 @@ void SNDSERV_initdata(void)
     int		i;
     int		j;
     
-    int*	steptablemid = steptable + 128;
+    int*	SNDSERV_steptablemid = SNDSERV_steptable + 128;
 
     for (i=0 ;
-	 i<sizeof(channels)/sizeof(unsigned char *) ;
+	 i<sizeof(SNDSERV_channels)/sizeof(unsigned char *) ;
 	 i++)
     {
-	channels[i] = 0;
+	SNDSERV_channels[i] = 0;
     }
     
     gettimeofday(&last, &whocares);
 
     for (i=-128 ; i<128 ; i++)
-	steptablemid[i] = pow(2.0, (i/64.0))*65536.0;
+	SNDSERV_steptablemid[i] = pow(2.0, (i/64.0))*65536.0;
 
     // generates volume lookup tables
     //  which also turn the unsigned samples
     //  into signed samples
     // for (i=0 ; i<128 ; i++)
     // for (j=0 ; j<256 ; j++)
-    // vol_lookup[i*256+j] = (i*(j-128))/127;
+    // SNDSERV_vol_lookup[i*256+j] = (i*(j-128))/127;
     
     for (i=0 ; i<128 ; i++)
 	for (j=0 ; j<256 ; j++)
-	    vol_lookup[i*256+j] = (i*(j-128)*256)/127;
+	    SNDSERV_vol_lookup[i*256+j] = (i*(j-128)*256)/127;
 
 }
 
@@ -719,7 +719,7 @@ SNDSERV_main
 			    //	p<snd#><step><vol><sep>
 			    sndnum = (commandbuf[0]<<4) + commandbuf[1];
 			    step = (commandbuf[2]<<4) + commandbuf[3];
-			    step = steptable[step];
+			    step = SNDSERV_steptable[step];
 			    vol = (commandbuf[4]<<4) + commandbuf[5];
 			    sep = (commandbuf[6]<<4) + commandbuf[7];
 
@@ -742,7 +742,7 @@ SNDSERV_main
 			      commandbuf[0] -= commandbuf[0]>='a' ? 'a'-10 : '0';
 			      commandbuf[1] -= commandbuf[1]>='a' ? 'a'-10 : '0';
 			      sndnum = (commandbuf[0]<<4) + commandbuf[1];
-			      write(fd, SNDSERV_S_sfx[sndnum].data, lengths[sndnum]);
+			      write(fd, SNDSERV_S_sfx[sndnum].data, SNDSERV_lengths[sndnum]);
 			      close(fd);
 			  }
 			  break;
@@ -764,7 +764,7 @@ SNDSERV_main
 
 	if (waitingtofinish)
 	{
-	    for(i=0 ; i<8 && !channels[i] ; i++);
+	    for(i=0 ; i<8 && !SNDSERV_channels[i] ; i++);
 	    
 	    if (i==8)
 		done=1;

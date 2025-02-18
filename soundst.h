@@ -127,7 +127,7 @@ struct sfxinfo_struct
 
 typedef struct
 {
-    // sound information (if null, channel avail.)
+    // sound information (if null, SNDSERV_channel avail.)
     sfxinfo_t*	sfxinfo;
 
     // origin of sound
@@ -136,7 +136,7 @@ typedef struct
     // handle of the sound being played
     int		handle;
     
-} channel_t;
+} SNDSERV_channel_t;
 
 
 
@@ -269,12 +269,12 @@ int SNDSERV_QrySongPlaying(int handle);
 //
 //  SFX I/O
 //
-void SNDSERV_SetChannels(int channels);
+void SNDSERV_SetChannels(int SNDSERV_channels);
 
 int SNDSERV_GetSfxLumpNum (sfxinfo_t*);
 
 
-// Starts a sound in a particular sound channel.
+// Starts a sound in a particular sound SNDSERV_channel.
 int
 SNDSERV_StartSound
 ( int		id,
@@ -286,7 +286,7 @@ SNDSERV_StartSound
 
 
 // Updates the volume, separation,
-//  and pitch of a sound channel.
+//  and pitch of a sound SNDSERV_channel.
 void
 SNDSERV_UpdateSoundParams
 ( int		handle,
@@ -295,10 +295,10 @@ SNDSERV_UpdateSoundParams
   int		pitch );
 
 
-// Stops a sound channel.
+// Stops a sound SNDSERV_channel.
 void SNDSERV_StopSound(int handle);
 
-// Called by SNDSERV_S_*()'s to see if a channel is still playing.
+// Called by SNDSERV_S_*()'s to see if a SNDSERV_channel is still playing.
 // Returns 0 if no longer playing, 1 if playing.
 int SNDSERV_SoundIsPlaying(int handle);
 
