@@ -57,7 +57,7 @@ int*		sfxlengths;
 typedef struct wadinfo_struct
 {
     char	identification[4];		                 
-    int		numlumps;
+    int		SNDSERV_numlumps;
     int		infotableofs;
 
 } wadinfo_t;
@@ -81,10 +81,10 @@ typedef struct lumpinfo_struct
 
 
 
-lumpinfo_t*	lumpinfo;		                                
-int		numlumps;
+lumpinfo_t*	SNDSERV_lumpinfo;		                                
+int		SNDSERV_numlumps;
 
-void**		lumpcache;
+void**		SNDSERV_lumpcache;
 
 
 #define strcmpi strcasecmp
@@ -174,25 +174,25 @@ void SNDSERV_openwad(char* wadname)
     if (strncmp(header.identification, "IWAD", 4))
 	SNDSERV_derror("wadfile has weirdo header");
 
-    numlumps = LONG(header.numlumps);
+    SNDSERV_numlumps = LONG(header.SNDSERV_numlumps);
     tableoffset = LONG(header.infotableofs);
-    tablelength = numlumps * sizeof(lumpinfo_t);
-    tablefilelength = numlumps * sizeof(filelump_t);
-    lumpinfo = (lumpinfo_t *) malloc(tablelength);
-    filetable = (filelump_t *) ((char*)lumpinfo + tablelength - tablefilelength);
+    tablelength = SNDSERV_numlumps * sizeof(lumpinfo_t);
+    tablefilelength = SNDSERV_numlumps * sizeof(filelump_t);
+    SNDSERV_lumpinfo = (lumpinfo_t *) malloc(tablelength);
+    filetable = (filelump_t *) ((char*)SNDSERV_lumpinfo + tablelength - tablefilelength);
 
-    // get the lumpinfo table
+    // get the SNDSERV_lumpinfo table
     lseek(wadfile, tableoffset, SEEK_SET);
     read(wadfile, filetable, tablefilelength);
 
     // process the table to make the endianness right and shift it down
-    for (i=0 ; i<numlumps ; i++)
+    for (i=0 ; i<SNDSERV_numlumps ; i++)
     {
-	strncpy(lumpinfo[i].name, filetable[i].name, 8);
-	lumpinfo[i].handle = wadfile;
-	lumpinfo[i].filepos = LONG(filetable[i].filepos);
-	lumpinfo[i].size = LONG(filetable[i].size);
-	// fprintf(stderr, "lump [%.8s] exists\n", lumpinfo[i].name);
+	strncpy(SNDSERV_lumpinfo[i].name, filetable[i].name, 8);
+	SNDSERV_lumpinfo[i].handle = wadfile;
+	SNDSERV_lumpinfo[i].filepos = LONG(filetable[i].filepos);
+	SNDSERV_lumpinfo[i].size = LONG(filetable[i].size);
+	// fprintf(stderr, "lump [%.8s] exists\n", SNDSERV_lumpinfo[i].name);
     }
 
 }
@@ -206,13 +206,13 @@ SNDSERV_loadlump
     int		i;
     void*	lump;
 
-    for (i=0 ; i<numlumps ; i++)
+    for (i=0 ; i<SNDSERV_numlumps ; i++)
     {
-	if (!strncasecmp(lumpinfo[i].name, lumpname, 8))
+	if (!strncasecmp(SNDSERV_lumpinfo[i].name, lumpname, 8))
 	    break;
     }
 
-    if (i == numlumps)
+    if (i == SNDSERV_numlumps)
     {
 	// fprintf(stderr,
 	//   "Could not find lumpname [%s]\n", lumpname);
@@ -220,10 +220,10 @@ SNDSERV_loadlump
     }
     else
     {
-	lump = (void *) malloc(lumpinfo[i].size);
-	lseek(lumpinfo[i].handle, lumpinfo[i].filepos, SEEK_SET);
-	read(lumpinfo[i].handle, lump, lumpinfo[i].size);
-	*size = lumpinfo[i].size;
+	lump = (void *) malloc(SNDSERV_lumpinfo[i].size);
+	lseek(SNDSERV_lumpinfo[i].handle, SNDSERV_lumpinfo[i].filepos, SEEK_SET);
+	read(SNDSERV_lumpinfo[i].handle, lump, SNDSERV_lumpinfo[i].size);
+	*size = SNDSERV_lumpinfo[i].size;
     }
 
     return lump;

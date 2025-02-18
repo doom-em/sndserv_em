@@ -56,11 +56,7 @@ static const char rcsid[] = "$Id: soundsrv.c,v 1.3 1997/01/29 22:40:44 b1 Exp $"
 
 #include "sounds.h"
 #include "soundsrv.h"
-#ifdef DOOM
-#include "../w_wad.h"
-#else
 #include "wadread.h"
-#endif
 
 
 // set this to whatever. I honestly couldn't care less...
@@ -74,7 +70,7 @@ typedef struct wadinfo_struct
 {
     // should be IWAD
     char	identification[4];	
-    int		numlumps;
+    int		SNDSERV_numlumps;
     int		infotableofs;
     
 } wadinfo_t;
@@ -384,13 +380,8 @@ SNDSERV_grabdata
 	exit(-1);
     }
 
-#ifdef DOOM
-	openwad(
-#else
-	SNDSERV_openwad(
-#endif
-		name
-	);
+    
+    SNDSERV_openwad(name);
     if (snd_verbose)
 	fprintf(stderr, "loading from [%s]\n", name);
 
@@ -398,15 +389,7 @@ SNDSERV_grabdata
     {
 	if (!SNDSERV_S_sfx[i].link)
 	{
-	    SNDSERV_S_sfx[i].data = 
-#ifdef DOOM
-		getsfx(
-#else
-		SNDSERV_getsfx(
-#endif
-			SNDSERV_S_sfx[i].name,
-			&SNDSERV_lengths[i]
-		);
+	    SNDSERV_S_sfx[i].data = SNDSERV_getsfx(SNDSERV_S_sfx[i].name, &SNDSERV_lengths[i]);
 	    if (longsound < SNDSERV_lengths[i]) longsound = SNDSERV_lengths[i];
 	} else {
 	    SNDSERV_S_sfx[i].data = SNDSERV_S_sfx[i].link->data;
